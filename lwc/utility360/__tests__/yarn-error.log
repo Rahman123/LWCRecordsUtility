@@ -1,0 +1,27 @@
+Arguments: 
+  /usr/local/Cellar/node/13.8.0/bin/node /usr/local/Cellar/yarn/1.22.0/libexec/bin/yarn.js add -D @salesforce/sfdx-lwc-jest
+
+PATH: 
+  /Users/k.ramakrishnegowda/.ansible:/Users/k.ramakrishnegowda/.ansible/py3/bin:/Users/k.ramakrishnegowda/.ansible/bin:/Users/k.ramakrishnegowda/bin:/Library/Frameworks/Python.framework/Versions/3.8/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/Users/k.ramakrishnegowda/.ansible
+
+Yarn version: 
+  1.22.0
+
+Node version: 
+  13.8.0
+
+Platform: 
+  darwin x64
+
+Trace: 
+  Error: getaddrinfo ENOTFOUND sfm-nginx-proxy.internal.salesforce.com
+      at GetAddrInfoReqWrap.onlookup [as oncomplete] (dns.js:64:26)
+
+npm manifest: 
+  No manifest
+
+yarn manifest: 
+  No manifest
+
+Lockfile: 
+  No lockfile

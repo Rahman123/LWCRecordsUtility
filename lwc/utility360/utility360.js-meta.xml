@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<LightningComponentBundle xmlns="http://soap.sforce.com/2006/04/metadata" fqn="utility360">
+    <apiVersion>47.0</apiVersion>
+  <isExposed>true</isExposed>
+  <targets>
+    <target>lightning__RecordPage</target>
+  </targets>
+    <targetConfigs>
+    <targetConfig targets="lightning__RecordPage">
+        <supportedFormFactors>
+            <supportedFormFactor type="Small" />
+            <supportedFormFactor type="Large" />
+        </supportedFormFactors>
+        <property default="Device" label="Select where you want the note/time data to be stored - Device(Only this device) , Record(Across Devices)" name="storagetype" type="String" datasource="Device,Record"/>
+    </targetConfig>
+</targetConfigs>
+</LightningComponentBundle>
+

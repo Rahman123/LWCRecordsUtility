@@ -1,0 +1,43 @@
+.container {
+    overflow: hidden;
+}
+
+.bar {
+    height: 36px;
+    background-color: #f5b041;
+}
+
+.separator {
+    display: flex;
+    align-items: center;
+    text-align: center;
+}
+.separator::before, .separator::after {
+    content: '';
+    flex: 1;
+    border-bottom: 1px solid rgb(0, 112, 210);
+}
+.separator::before {
+    margin-right: .25em;
+}
+.separator::after {
+    margin-left: .25em;
+}
+
+.date {
+    background-color:cornsilk; 
+    font-size:medium; 
+    color:darkblue;
+}
+
+.clockmaincontainer {
+    border-color: beige;
+    box-shadow: 0 0 5px;
+}
+
+.timecontainer {
+    color: darkblue;
+    font-size: medium;
+    border-color: #b5b5b5;
+    box-shadow: 0 0 4px;
+}

@@ -1,0 +1,131 @@
+<template>
+    <div class="slds-section slds-is-open">
+        <h3 class="slds-section__title" style="background-color: coral;">
+          <button aria-controls="expando-unique-id" aria-expanded="true" class="slds-button slds-section__title-action slds-p-around_small" style="background-color: cornsilk;">
+            <lightning-icon 
+                icon-name={sectionActionIcon} 
+                alternative-text="collapsible section" 
+                onclick={toggleSectionView}
+                title="collapse section"
+                size={sectionIconSize}>
+            </lightning-icon>
+            <span class="slds-truncate slds-p-around_small slds-modal__title" style="color: var(--lwc-brandAccessible,rgb(0, 112, 210))" title="Section Title">Clock Section</span>
+          </button>
+        </h3>
+        <div aria-hidden="false" class="slds-section__content" id="expando-unique-id">
+            <div if:true={additionalClockDataFound} class="slds-grid slds-grid_vertical slds-align_absolute-center">    
+                <lightning-formatted-text class="slds-p-around_small slds-col" value="Malformatted address fields found"></lightning-formatted-text>
+                <lightning-button class="slds-col" label="Try Harder" onclick={handleEditDistSearch}></lightning-button>
+            </div>
+            <template if:true={shouldRender}>
+                <div class="clock slds-p-around_none slds-m-top_x-small slds-m-horizontal_none">
+                    <ul class="slds-m-around_medium slds-grid slds-wrap">
+                        <template for:each={clocks} for:item="clock">
+                            <li key={clock.id} class={getFormattedClassForClockContainer}>
+                                    <lightning-input if:true={showDeleteTimeZoneButton} type="checkbox" onchange={handleSelectTimezone} data-timezoneid={clock.id}></lightning-input>
+                                    <lightning-formatted-date-time
+                                    class="custom-box slds-box slds-p-around_medium slds-text-align_center slds-col slds-size_1-of-1 slds-page-header timecontainer"
+                                        value={timestamp}
+                                        hour="2-digit"
+                                        minute="2-digit"
+                                        time-zone={clock.timeZone}>
+                                    </lightning-formatted-date-time>
+                                    <lightning-formatted-text value={clock.timeZone} class="slds-col slds-size_1-of-1 slds-text-align_center date"></lightning-formatted-text>
+                                    <lightning-formatted-text value={clock.label} style="background-color:cornsilk" class="slds-col slds-size_1-of-1 slds-text-align_center"></lightning-formatted-text>
+                            </li>
+                        </template>
+                    </ul>
+
+                <lightning-button-group class="slds-wrap slds-align_absolute-center slds-p-around_medium">
+                    <lightning-button label="Refresh" onclick={refresh}></lightning-button>
+                    <lightning-button label="Add Timezone" onclick={handleAddTimezone}></lightning-button>
+                    <lightning-button label={selectedButtonLabel} icon-name="utility:approval" onclick={handleSelectTimezoneToggle}></lightning-button>
+                    <lightning-button if:true={showDeleteTimeZoneButton} label="Delete timezone" icon-name="utility:close" onclick={handleDeleteSelectedTimezones}></lightning-button>
+                </lightning-button-group>
+
+                </div>
+
+                <template if:true={openModal}>
+                        <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true" aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+                            <div class="slds-modal__container">
+                            <header class="slds-modal__header">
+                                <button class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse" onclick={handleModalClose} title="Close">
+                                    <lightning-icon 
+                                        icon-name="utility:close" 
+                                        alternative-text="close note" 
+                                        title="close">
+                                    </lightning-icon>
+                                </button>
+                                <h2 id="modal-heading-01" class="slds-modal__title slds-hyphenate">Add Timezone</h2>
+                            </header>
+                            <div class="slds-modal__content slds-p-around_medium" style="overflow: initial;" id="modal-content-id-1">
+                                <h2 if:true={hasSelectionBeenMade} id="modal-heading-02" class="slds-modal__title slds-hyphenate">{addedTimezoneDisplayString}</h2>
+
+                                <div class="slds-p-around_medium">
+                                    <div class="slds-list_horizontal">
+                                        <lightning-icon icon-name="standard:search" alternative-text="search" title="search"></lightning-icon>
+                                        <label class="slds-form-element__label slds-p-left_small" for="search-picklist">Search for city</label>
+                                    </div>
+                                    <lightning-combobox
+                                        id = "search-picklist"
+                                        name="Search for city"
+                                        value={seachPicklistValue}
+                                        placeholder={placeholderText}
+                                        options={searchResults}
+                                        onchange={handleSelectFromSearch}
+                                        onkeydown={handleInputFromSearch}>
+                                    </lightning-combobox>
+                                </div>
+
+                                <button if:true={isSearchReadyToSave} class="slds-align_absolute-center slds-button slds-button_brand" onclick={hanldeAddTimezoneFromSearch}>Add Timezone</button>
+                                
+                                <div class="separator slds-p-around_medium">Or select based on Country/State/City</div>
+
+                                <lightning-combobox
+                                    if:true={showCountryPicklist}
+                                    name="Country"
+                                    label="Country"
+                                    class="slds-p-around_medium"
+                                    value={countryPicklistValue}
+                                    placeholder="Select Country"
+                                    options={countryPicklistOptions}
+                                    onchange={handleCountryPicklistChange} >
+                                </lightning-combobox>
+
+                                <lightning-combobox
+                                    if:true={showStatePicklist}
+                                    name="State/Province"
+                                    label="State/Province"
+                                    class="slds-p-around_medium"
+                                    value={statePicklistValue}
+                                    placeholder="Select State/Province/Union"
+                                    options={statePicklistOptions}
+                                    onchange={handleStatePicklistChange} >
+                                </lightning-combobox>
+                        
+                                <lightning-combobox
+                                    if:true={showCityPicklist}
+                                    name="City"
+                                    label="City"
+                                    class="slds-p-around_medium"
+                                    value={cityPicklisValue}
+                                    placeholder="Select Closest City"
+                                    options={cityPicklistOptions}
+                                    onchange={handleCityPicklistChange} >
+                                </lightning-combobox>
+
+                                <button if:true={isPicklistReadyToSave} class="slds-button slds-align_absolute-center slds-button_brand" onclick={hanldeAddTimezoneFromPicklist}>Add Timezone</button>
+
+                            </div>
+                            <footer class="slds-modal__footer">
+                                <button class="slds-button slds-button_neutral" onclick={handleModalClose}>Cancel</button>
+                                <button class="slds-button slds-button_brand" onclick={hanldeModalSave}>Save</button>
+                            </footer>
+                            </div>
+                        </section>
+                        <div class="slds-backdrop slds-backdrop_open"></div>
+                </template>
+            </template>
+            </div>
+    </div>
+</template>

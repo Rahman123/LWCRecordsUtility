@@ -1,0 +1,155 @@
+<template>
+    <article class="component-container">
+        <c-clock-component
+            geo-location-fields-data = {geoLocationFieldsData}
+            address-fields-data = {addressFieldsData}
+            should-render={triggerRerender}
+            onclockdataupdate = {handleClockDataChange}
+            stored-clock-data={storedClockData}
+            parent-width={flexipageRegionWidth}>
+        </c-clock-component>
+    </article>
+
+    <div class="slds-section slds-is-open">
+        <h3 class="slds-section__title sectionborder" style="background-color: coral;">
+          <button aria-controls="expando-unique-id" aria-expanded="true" class="slds-button slds-section__title-action slds-p-around_small"  style="background-color: cornsilk;">
+            <lightning-icon 
+                icon-name={sectionActionIcon} 
+                alternative-text="collapsible section" 
+                onclick={toggleSectionView}
+                title="collapse section"
+                size={sectionIconSize}>
+            </lightning-icon>
+            <span class="slds-truncate slds-p-around_small slds-modal__title" style="color: var(--lwc-brandAccessible,rgb(0, 112, 210))" title="Section Title">Note Section</span>
+          </button>
+        </h3>
+        <div aria-hidden="false" class="slds-section__content sectionborder" style="background-color:white" id="expando-unique-id">
+            <article class="component-container">
+                <div>
+                    <lightning-datatable
+                            key-field="id"
+                            data={dataTableData}
+                            columns={columns}
+                            onrowaction={handleRowAction}>
+                    </lightning-datatable>
+                </div> 
+
+                <lightning-button-group if:true={shouldDisplayNotes} class="slds-wrap slds-align_absolute-center slds-p-around_medium">
+                    <lightning-button label="Focus Out" onclick={handleFocusOut}></lightning-button>
+                    <lightning-button label={addNoteLabel} icon-name={addNoteIconNme} onclick={handleAddNewNote}></lightning-button>
+                    <lightning-button label="Delete Selected Notes" onclick={handleDeleteNotes}></lightning-button>
+                </lightning-button-group>
+
+            </article> 
+
+            <article class="component-container notearticle" if:true={shouldDisplayNotes}>
+                <ul class="slds-m-around_medium">
+                    <template for:each={notes} for:item="note">
+                        <li key={note.id} class={getComputedStyleForFirtsNote}>
+                            <div id={note.id} class="mydiv" data-dirtystate={note.isDirty} data-notenumber={note.id}>
+                                <div if:true={note.isDragToggleEnabled}>
+                                    <div class="actions slds-button slds-button_icon slds-modal__close slds-button_icon-bare slds-button_icon-inverse">
+                                        <lightning-icon 
+                                            icon-name="utility:delete" 
+                                            alternative-text="delete note" 
+                                            onclick={hanldeDeleteNote}
+                                            data-notenumber={note.id} 
+                                            title="delete"
+                                            size="small">
+                                        </lightning-icon>
+                                        <lightning-icon 
+                                            icon-name="utility:alert" 
+                                            alternative-text="set alert for note" 
+                                            data-notenumber={note.id} 
+                                            onclick={handleCreateReminder}
+                                            title="alert"
+                                            size="small">
+                                        </lightning-icon>
+                                        <lightning-icon 
+                                            icon-name="utility:close" 
+                                            alternative-text="close note" 
+                                            onclick={toggleDragMode}
+                                            data-notenumber={note.id} 
+                                            title="close"
+                                            size="small">
+                                        </lightning-icon>
+                                    </div>
+                                    <div class="toggledwrapper">
+                                        <div 
+                                            class="mydivheader" draggable="true" 
+                                            onmousedown={handleMouseDown} 
+                                            onmouseup={handlecloseDragElement}>
+                                            Click,drag and drop! 
+                                        </div>                        
+                                        <div>
+                                            <lightning-input data-notenumber={note.id} value={note.fieldName} class ="slds-p-around_m toggledcomment" label="Note Label" onchange={handleNoteLabelChange}></lightning-input>
+                                            <div class="toggledstory">
+                                                <lightning-input-rich-text if:true={shoudlDisplayRichTextEditor} value={note.comment} oninput={handleNoteTextAreaChange}></lightning-input-rich-text>
+                                                <textarea data-notenumber={note.id} if:false={shoudlDisplayRichTextEditor} class="slds-textarea slds-p-around_small toggledcomment" oninput={handleNoteTextAreaChange}>{note.comment}</textarea>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div if:false={note.isDragToggleEnabled}>
+                                    <div class="wrapper">
+                                        <div data-notenumber={note.id} class="container">
+                                            <div class="story">
+                                                <lightning-icon 
+                                                    icon-name="utility:edit" 
+                                                    alternative-text="edit note" 
+                                                    onclick={toggleDragMode}
+                                                    data-notenumber={note.id} 
+                                                    class = "editicon"
+                                                    title="edit"
+                                                    size="x-small">
+                                                </lightning-icon>
+                                                <div class="info">
+                                                    <lightning-formatted-text value={note.fieldName} class="slds-p-around_small slds-align_absolute-center slds-text-heading_small"></lightning-formatted-text>
+                                                    <lightning-formatted-text value={note.comment} class="comment slds-p-around_small slds-align_absolute-center"></lightning-formatted-text>
+                                                </div>
+                                            </div>
+                                        </div> 
+                                    </div>
+                                </div>
+                            </div>                
+                        </li>
+                    </template>
+                </ul>
+
+                <template if:true={openModal}>
+                    <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true" aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+                        <div class="slds-modal__container">
+                        <header class="slds-modal__header">
+                            <button class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse" onclick={handleModalClose} title="Close">
+                            <svg class="slds-button__icon slds-button__icon_large" aria-hidden="true">
+                                <use xlink:href="/assets/icons/utility-sprite/svg/symbols.svg#close"></use>
+                            </svg>
+                            <span class="slds-assistive-text">Close</span>
+                            </button>
+                            <h2 id="modal-heading-01" class="slds-modal__title slds-hyphenate">Add Reminder</h2>
+                        </header>
+                        <div class="slds-modal__content slds-p-around_medium" style="overflow: initial;" id="modal-content-id-1">
+                            <lightning-formatted-text value="Select the timezone in which you want the reminder to be set (Leave blank for local time)"></lightning-formatted-text>
+                            <lightning-combobox
+                                if:true={showCreateReminderPicklist}
+                                name="Timezone"
+                                label="Timezone"
+                                value={currentSelectedTimezoneValue}
+                                placeholder="Select Timezone for which you want to add a reminder for"
+                                options={currentTimezonestOptions}
+                                onchange={handleSelectTimezoneForReminder} >
+                            </lightning-combobox>
+                            <lightning-input type="datetime" name="input1" label="Enter a date/time value in your desired timezone" onchange={handleDateTimeValueChange}></lightning-input>
+                        </div>
+                        <footer class="slds-modal__footer">
+                            <button class="slds-button slds-button_neutral" onclick={handleModalClose}>Cancel</button>
+                            <button class="slds-button slds-button_brand" onclick={handleModalSave}>Save</button>
+                        </footer>
+                        </div>
+                    </section>
+                    <div class="slds-backdrop slds-backdrop_open"></div>
+            </template>
+            </article>
+        </div>
+    </div>
+</template>

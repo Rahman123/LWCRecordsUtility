@@ -1,0 +1,1 @@
+export const SEARCH_PLACEHOLDER_TEXT = 'Search for the closest city............';

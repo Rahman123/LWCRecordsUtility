@@ -1,0 +1,26 @@
+{
+    "compilerOptions": {
+        "experimentalDecorators": true,
+        "baseUrl": ".",
+        "paths": {
+            "c/clockComponent": [
+                "clockComponent/clockComponent.js"
+            ],
+            "c/testGetRecord": [
+                "testGetRecord/testGetRecord.js"
+            ],
+            "c/utility360": [
+                "utility360/utility360.js"
+            ]
+        }
+    },
+    "include": [
+        "**/*",
+        "../../../../.sfdx/typings/lwc/**/*.d.ts"
+    ],
+    "typeAcquisition": {
+        "include": [
+            "jest"
+        ]
+    }
+}
